@@ -46,7 +46,8 @@
     "drupal/entity_reference_display": "^1.0",
     "drupal/search_api_solr": "^1.0",
     "degov/degov_base_theme": "^1.11",
-    "degov/modules": "^1.14"
+    "degov/modules": "^1.14",
+    "drupal/paragraphs": "^1.2"
   },
   "repositories": {
     "drupal": {
