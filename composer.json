@@ -27,7 +27,6 @@
     "drupal-composer/drupal-scaffold": "^2.0.0",
     "cweagans/composer-patches": "^1.6.0",
     "mnsami/composer-custom-directory-installer": "^1.0",
-    "wikimedia/composer-merge-plugin": "dev-master",
     "acquia/lightning": "~2.2.0",
     "drupal/config_rewrite": "^1.0",
     "drupal/admin_toolbar": "^1.19",
@@ -46,7 +45,7 @@
     "drupal/entity_reference_display": "^1.0",
     "drupal/search_api_solr": "^1.0",
     "degov/degov_base_theme": "^1.11",
-    "degov/modules": "^1.14",
+    "degov/modules": "^dev-release/2.x",
     "drupal/paragraphs": "^1.2"
   },
   "repositories": {
@@ -56,7 +55,7 @@
     },
     "degov-modules": {
       "type": "git",
-      "url": "https://github.com/deGov/modules.git"
+      "url": "https://github.com/DerH4NNES/modules.git"
     },
     "bowser-assets": {
       "type": "composer",
@@ -129,14 +128,5 @@
         "2868155 - Add new hooks to allow easier editing of paragraph forms": "https://www.drupal.org/files/issues/2868155-16.patch"
       }
     },
-    "merge-plugin": {
-      "merge-extra": true,
-      "merge-extra-deep": true,
-      "include": [
-        "docroot/modules/degov/*/composer.json",
-        "docroot/modules/custom/*/composer.json",
-        "docroot/themes/degov/*/composer.json"
-      ]
-    }
   }
 }
