@@ -127,6 +127,6 @@
       "drupal/paragraphs": {
         "2868155 - Add new hooks to allow easier editing of paragraph forms": "https://www.drupal.org/files/issues/2868155-16.patch"
       }
-    },
+    }
   }
 }
