@@ -1,0 +1,32 @@
+services:
+  cache.backend.degov_common:
+    class: Drupal\degov_common\DegovCacheBackendFactory
+    arguments: ['@database', '@settings', '@cache_tags.invalidator.checksum']
+  degov_common.quickedit.twig.extension:
+    class: Drupal\degov_common\Twig\Extension\FieldQuickEditAttributesExtension
+    tags:
+      - { name: twig.extension }
+  degov_config.updater:
+    class: Drupal\degov_common\DegovConfigUpdate
+    arguments: ['@config.storage', '@event_dispatcher', '@config.manager', '@lock', '@config.typed', '@module_handler', '@module_installer', '@theme_handler', '@string_translation']
+  degov_config.block_installer:
+    class: Drupal\degov_common\DegovBlockInstaller
+    arguments: ['@config.storage', '@event_dispatcher', '@config.manager', '@lock', '@config.typed', '@module_handler', '@module_installer', '@theme_handler', '@string_translation']
+  degov_config.module_updater:
+    class: Drupal\degov_common\DegovModuleUpdater
+    arguments: ['@config.factory', '@module_handler', '@logger.channel.config_rewrite', '@?language.config_factory_override']
+  degov_locale.updater:
+    class: Drupal\degov_common\DegovLocaleUpdate
+    arguments: ['@module_handler']
+  degov_common_media_access:
+    class: '\Drupal\degov_common\EventSubscriber\MediaManagerSubscriber'
+    arguments: ['@current_user']
+    tags:
+      - { name: 'event_subscriber' }
+  degov_common.video_utils:
+    class: '\Drupal\degov_common\VideoUtils'
+    arguments: ['@http_client', '@video_embed_field.provider_manager', '@file_system', '@logger.factory']
+  degov_common.route_subscriber:
+    class: '\Drupal\degov_common\Routing\RouteSubscriber'
+    tags:
+      - { name: event_subscriber }

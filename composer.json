@@ -45,17 +45,12 @@
     "drupal/entity_reference_display": "^1.0",
     "drupal/search_api_solr": "^1.0",
     "degov/degov_base_theme": "^1.11",
-    "degov/modules": "dev-release/2.x",
     "drupal/paragraphs": "^1.2"
   },
   "repositories": {
     "drupal": {
       "type": "composer",
       "url": "https://packages.drupal.org/8"
-    },
-    "degov-modules": {
-      "type": "git",
-      "url": "https://github.com/DerH4NNES/modules.git"
     },
     "bowser-assets": {
       "type": "composer",
@@ -102,9 +97,6 @@
       ],
       "docroot/libraries/{$name}": [
         "type:drupal-library"
-      ],
-      "docroot/modules/degov": [
-        "degov/modules"
       ],
       "docroot/themes/degov/degov_base_theme": [
         "degov/degov_base_theme"

@@ -1,0 +1,121 @@
+<?php
+
+use Drupal\degov_common\Common;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Datetime\DrupalDateTime;
+
+/**
+ * Implements hook_preprocess().
+ */
+function degov_node_event_preprocess(&$variables, $hook, &$info) {
+  // Add template suggestions and libraries implemented in this module.
+  Common::addThemeSuggestions($variables, $hook, $info, [
+    'module_name' => 'degov_node_event',
+    'entity_type' => 'node',
+    'entity_bundles' => ['event'],
+    'entity_view_modes' => ['teaser', 'latest', 'slideshow'],
+  ]);
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function degov_node_event_views_pre_render(\Drupal\views\ViewExecutable $view) {
+  if ($view->storage->id() == "events" && $view->current_display == 'calendar_widget') {
+    $view->element['#attached']['library'][] = 'degov_node_event/degov_events';
+  }
+}
+
+/**
+ * Preprocess event nodes.
+ *
+ * @param $variables
+ */
+function degov_node_event_preprocess_node(&$variables) {
+  $node = $variables['node'];
+  if ($node->bundle() == 'event') {
+    $variables['start_date_timestamp'] = FALSE;
+    $variables['end_date_timestamp'] = FALSE;
+    $timezone = drupal_get_user_timezone();
+
+    if (!$node->get('field_event_date')->isEmpty()) {
+      $startDateObject = new \Drupal\Core\Datetime\DrupalDateTime($node->get('field_event_date')->value, 'UTC');
+      $startDateObject->setTimeZone(timezone_open($timezone));
+      $variables['start_date_timestamp'] = $startDateObject->getTimestamp();
+    }
+    if (!$node->get('field_event_date_end')->isEmpty()) {
+      $endDateObject = new \Drupal\Core\Datetime\DrupalDateTime($node->get('field_event_date_end')->value, 'UTC');
+      $endDateObject->setTimeZone(timezone_open($timezone));
+      $variables['end_date_timestamp'] = $endDateObject->getTimestamp();
+    }
+  }
+}
+
+/**
+ * Event calender date form alter
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @param $form_id
+ */
+function degov_node_event_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'views_exposed_form') {
+    // Apply our alter only for events views display.
+    $view_names = ['events'];
+    $view = $form_state->getStorage('view');
+    if (in_array($view['view']->id(), $view_names)) {
+      /** @var \Drupal\Core\Datetime\Entity\DateFormat $format */
+      $format = \Drupal::entityTypeManager()->getStorage('date_format')->load('short');
+      $pattern = 'd.m.Y';
+      if ($format) {
+        $pattern = $format->getPattern();
+      }
+      /*if (!empty($form['from'])) {
+        $form['from']['#attributes']['data-drupal-date-format'] = $pattern;
+      }
+      if (!empty($form['to'])) {
+        $form['to']['#attributes']['data-drupal-date-format'] = $pattern;
+      }*/
+      // Custom validate function.
+      $form['#validate'][] = 'degov_node_event_date_form_validate';
+    }
+  }
+
+  if ($form_id == 'node_event_edit_form' || $form_id == 'node_event_form') {
+    $form['#validate'][] = 'degov_node_event_node_form_validate';
+  }
+}
+
+/**
+ * Event calender date form custom validation
+ * Add 24 hours in date_to filed to get current date events
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ */
+function degov_node_event_date_form_validate($form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  // Check if the exposed filter is supposed to filter by end date.
+  if ($form_state->getValue('to')) {
+    $date_to = $form_state->getValue('to');
+    // Change the date to the end of the day.
+    $date_to = $date_to . ' ' . '23:59:00';
+    $form_state->setValue('to', $date_to);
+  }
+}
+
+/**
+ * Make sure the begin date is before the end date.
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ */
+function degov_node_event_node_form_validate($form, FormStateInterface $form_state) {
+  $from = $form_state->getValue('field_event_date');
+  $till = $form_state->getValue('field_event_date_end');
+
+  if (isset($from[0]['value']) && $from[0]['value'] instanceof DrupalDateTime && isset($till[0]['value']) && $till[0]['value'] instanceof DrupalDateTime) {
+    if ($from[0]['value'] >= $till[0]['value']) {
+      $form_state->setErrorByName('field_event_date', t('The start date must be earlier than the end date.'));
+    }
+  }
+}

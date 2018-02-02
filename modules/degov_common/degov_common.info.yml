@@ -1,0 +1,12 @@
+name: 'deGov - Common'
+description: "Dieses Modul enthält alle gemeinsamen Funktionalität für alle Module."
+package: deGov
+type: module
+core: 8.x
+dependencies:
+  - viewsreference
+  - config_rewrite
+  - dropzonejs_eb_widget
+  - lightning_media
+  - entity_reference_integrity
+  - entity_reference_integrity_enforce

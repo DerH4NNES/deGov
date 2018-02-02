@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present a media entity.
+ *
+ * Available variables:
+ * - name: Name of the media.
+ * - content: Media content.
+ *
+ * @see template_preprocess_media()
+ *
+ * @ingroup themeable
+ */
+#}
+{% if content.field_person_image|field_value %}
+  {% set media_classes = 'col-sm-6' %}
+{% else %}
+  {% set media_classes = 'col-sm-12' %}
+{% endif %}
+{%
+set classes = [
+  'media',
+  'media-person',
+  'clearfix',
+]
+%}
+<article{{ attributes.addClass(classes) }}>
+  {{ content.contextual_links }}
+  <div class="media-person__image {{ media_classes }}"{{ content.field_person_image|quickedit_attr }} >{{ content.field_person_image|field_value }}</div>
+  <div class="media-person__info {{ media_classes }}"{{ content.field_person_info|quickedit_attr }}>{{ content.field_person_info|field_value }}
+  {% if content.field_tags|field_value %}
+    <div class="tags"{{ content.field_tags|quickedit_attr }}>{{ content.field_tags }}</div>
+  {% endif %}</div>
+</article>

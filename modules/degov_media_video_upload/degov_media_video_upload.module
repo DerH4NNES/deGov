@@ -1,0 +1,111 @@
+<?php
+
+use Drupal\degov_common\Common;
+use Drupal\Core\Template\Attribute;
+
+/**
+ * Implements hook_preprocess().
+ */
+function degov_media_video_upload_preprocess(&$variables, $hook, &$info) {
+  // Add template suggestions and libraries implemented in this module.
+  Common::addThemeSuggestions($variables, $hook, $info, [
+    'module_name' => 'degov_media_video_upload',
+    'entity_type' => 'media',
+    'entity_bundles' => ['video_upload'],
+    'entity_view_modes' => ['usage', 'preview', 'search', 'embedded', 'reference'],
+  ]);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function degov_media_video_upload_preprocess_media__video_upload(&$variables) {
+  /* @var \Drupal\media_entity\Entity\Media $media */
+  $media = $variables['elements']['#media'];
+
+  $variables['video_url'] = $media->url();
+  $variables['video_attributes'] = new Attribute([
+    'id' => 'video-upload-' . $media->id(),
+    'preload' => 'metadata',
+    'controls' => 'controls',
+  ]);
+
+  $variables['content']['video_date'] = format_date($variables['elements']['#media']->created->value, 'date_medium');
+
+  // Check if the download of the video is allowed by media settings.
+  $download_is_allowed = FALSE;
+  if ($media->hasField('field_allow_download') && !$media->get('field_allow_download')->isEmpty()) {
+    $download_is_allowed = $media->get('field_allow_download')->value ? TRUE : FALSE;
+  }
+
+  if (!$media->get('field_video_upload_mp4')->isEmpty()) {
+    /* @var \Drupal\file\Entity\File $file */
+    $file = $media->field_video_upload_mp4->entity;
+    if (!empty($file)) {
+      $variables['video_mp4'] = file_create_url($file->getFileUri());
+      // Add the download link only to full view mode.
+      if (in_array($variables['elements']['#view_mode'], ['full', 'default'])) {
+        // If allowed let's prepare the links.
+        if ($download_is_allowed) {
+          $variables['content']['download_mp4'] = degov_common_file_download_render_array($file);
+        }
+      }
+    }
+  }
+
+  if (!$media->get('field_video_upload_webm')->isEmpty()) {
+    /* @var \Drupal\file\Entity\File $file */
+    $file = $media->field_video_upload_webm->entity;
+    if (!empty($file)) {
+      $variables['video_webm'] = file_create_url($file->getFileUri());
+      // Add the download link only to full view mode.
+      if (in_array($variables['elements']['#view_mode'], ['full', 'default'])) {
+        // If allowed let's prepare the links.
+        if ($download_is_allowed) {
+          $variables['content']['download_webm'] = degov_common_file_download_render_array($file);
+        }
+      }
+    }
+  }
+
+  if (!$media->get('field_video_upload_ogg')->isEmpty()) {
+    /* @var \Drupal\file\Entity\File $file */
+    $file = $media->field_video_upload_ogg->entity;
+    if (!empty($file)) {
+      $variables['video_ogg'] = file_create_url($file->getFileUri());
+      // Add the download link only to full view mode.
+      if (in_array($variables['elements']['#view_mode'], ['full', 'default'])) {
+        // If allowed let's prepare the links.
+        if ($download_is_allowed) {
+          $variables['content']['download_ogg'] = degov_common_file_download_render_array($file);
+        }
+      }
+    }
+  }
+
+  /* @var \Drupal\media_entity\Entity\Media $poster */
+  $image = $media->field_video_upload_preview->entity;
+  if (!empty($image)) {
+    $file = $image->image->entity;
+    if (!empty($file)) {
+      $variables['video_attributes']['poster'] = file_create_url($file->getFileUri());
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function degov_media_video_upload_media_presave(Drupal\Core\Entity\EntityInterface $entity) {
+  $bundle = $entity->bundle();
+  if ($bundle == 'video_upload') {
+    // Check if the field for duration is enabled for the media bundle and that it is empty.
+    // There is no need to check the duration again and again if it is already set.
+    if ($entity->hasField('field_media_duration') && $entity->get('field_media_duration')->isEmpty()) {
+      /** @var \Drupal\degov_common\VideoUtils $videoUtils */
+      $videoUtils = \Drupal::service('degov_common.video_utils');
+      $duration = $videoUtils->getVideoDuration($entity);
+      $entity->set('field_media_duration', [0 => ['value' => $duration]]);
+    }
+  }
+}

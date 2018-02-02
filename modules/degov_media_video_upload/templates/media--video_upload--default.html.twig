@@ -1,0 +1,112 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present a media entity.
+ *
+ * Available variables:
+ * - name: Name of the media.
+ * - content: Media content.
+ *
+ * @see template_preprocess_media()
+ *
+ * @ingroup themeable
+ */
+#}
+{% set caption %}
+  {{- content.field_video_upload_caption -}}
+{% endset %}
+{% set copyright %}
+  {{- content.field_copyright -}}
+{% endset %}
+{%
+set media_classes = [
+  'video-upload',
+  'clearfix',
+]
+%}
+<article{{ attributes.addClass(media_classes) }}>
+  {{ content.contextual_links }}
+  <div class="video-upload__video">
+    <video{{ video_attributes }}>
+      {% if video_mp4 %}
+      <source src="{{ video_mp4 }}" type="video/mp4">
+      {% endif %}
+      {% if video_ogg %}
+      <source src="{{ video_ogg }}" type="video/ogg">
+      {% endif %}
+      {% if video_webm %}
+      <source src="{{ video_webm }}" type="video/webm">
+      {% endif %}
+      {% trans %}
+      I'm sorry; your browser doesn't support HTML5 video in WebM with VP8/VP9 or MP4 with H.264.
+      {% endtrans %}
+      {% for key, subtitle in content.field_video_upload_subtitle if key|first != '#' %}
+      {{ subtitle }}
+      {% endfor %}
+    </video>
+  </div>
+  <div class="video__extra-info">
+    <div class="video-upload__top">
+      {% if content.field_media_accessibility|field_value %}
+        <div class="media__type-label video__assets-accessibility"{{ content.field_media_accessibility|quickedit_attr }}>
+          {{ content.field_media_accessibility|field_value }}
+        </div>
+      {% else %}
+        <div class="media__type-label">{{ 'Video'|t }}</div>
+      {% endif %}
+      {% if content.field_copyright|field_value %}
+        <span class="video-upload__copyright">
+          <span class="video-upload__copyright-label"{{ content.field_copyright|quickedit_attr }}>{{ '&copy;'|trans }}</span>
+            {{ content.field_copyright|field_value }}
+        </span>
+      {% endif %}
+    </div>
+    <div class="video-upload__downloads">
+      {% if content.download_mp4 %}
+          {{ content.download_mp4 }}
+      {% endif %}
+      {% if content.download_ogg %}
+          {{ content.download_ogg }}
+      {% endif %}
+      {% if content.download_webm %}
+          {{ content.download_webm }}
+      {% endif %}
+    </div>
+    {% if content.field_title %}
+      <h2 class="video-upload__title"{{ content.field_title|quickedit_attr }}>{{ content.field_title|field_value }}</h2>
+    {% endif %}
+    {% if content.field_video_upload_caption|field_value %}
+      <span class="video-upload__caption"{{ content.field_video_upload_caption|quickedit_attr }}>{{ content.field_video_upload_caption|field_value }}</span>
+    {% endif %}
+    {% if content.field_media_duration|field_value %}
+      <div class="video__duration"{{ content.field_media_duration|quickedit_attr }}>{{ content.field_media_duration|field_value }}</div>
+    {% endif %}
+    <div class="video__date">{{ content.video_date }}</div>
+    {% if content.field_description %}
+      <div class="video__description"{{ content.field_description|quickedit_attr }}>
+        {{ content.field_description|field_value }}
+      </div>
+    {% endif %}
+    {% if content.field_tags|field_value %}
+      <div class="tags"{{ content.field_tags|quickedit_attr }}>{{ content.field_tags }}</div>
+    {% endif %}
+    {% if content.field_media_transcription|field_value %}
+      <div class="video-upload__transcription"{{ content.field_media_transcription|quickedit_attr }}>
+        <div class="video-upload__transcription__header">
+          <i class="fa fa-caret-right"></i>
+          {{ 'Transkription'|trans }}
+        </div>
+        <div class="video-upload__transcription__body closed">
+          {{ content.field_media_transcription|field_value }}
+        </div>
+      </div>
+    {% endif %}
+    {% if content.field_media_language %}
+      <div class="video__assets">
+        <div class="video__assets-language"{{ content.field_media_language|quickedit_attr }}>
+          {{ content.field_media_language|field_value }}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</article>

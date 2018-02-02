@@ -1,0 +1,19 @@
+{
+  "name": "degov/modules",
+  "description": "deGov - Modules",
+  "license": "GPL-3.0+",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "wikimedia/composer-merge-plugin": "dev-master"
+  },
+  "extra": {
+    "merge-plugin": {
+      "merge-extra": true,
+      "merge-extra-deep": true,
+      "include": [
+        "./*/composer.json"
+      ]
+    }
+  }
+}

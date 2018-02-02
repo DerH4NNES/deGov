@@ -1,0 +1,37 @@
+{
+  "name": "degov_content_types_shared_fields",
+  "type": "drupal-module",
+  "description": "Adds common configuration and methods for deGov modules.",
+  "license": "GPL-2.0+",
+  "homepage": "https://www.degov.org",
+  "require": {
+    "drupal/shariff": "^1.0",
+    "drupal/paragraphs": "^1.2"
+  },
+  "extra": {
+    "installer-paths": {
+      "docroot/modules/contrib/{$name}": [
+        "type:drupal-module"
+      ]
+    },
+    "patches": {
+      "drupal/shariff": {
+        "2881126 - two twitter popups: missing js & dependency issue": "https://www.drupal.org/files/issues/two_twitter_popups-2881126-6.patch"
+      }
+    }
+  },
+  "repositories": [
+    {
+      "type": "package",
+      "package": {
+        "name": "heiseonline/shariff",
+        "version": "master",
+        "type": "drupal-library",
+        "dist": {
+          "url": "https://github.com/heiseonline/shariff/archive/master.zip",
+          "type": "zip"
+        }
+      }
+    }
+  ]
+}
